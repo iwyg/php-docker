@@ -1,0 +1,38 @@
+fpm:
+  build: "./php"
+  ports:
+    - "9000:9000"
+  links:
+    - postgres:postgres
+    - memcached:memcached
+    - redis:redis
+  volumes:
+    - ./app:/var/www/app
+
+nginx:
+  build: "./nginx"
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - fpm
+  volumes:
+    - ./app:/var/www/app
+    - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+
+postgres:
+  image: postgres
+  ports:
+    - "3306:3306"
+  environment:
+    POSTGRES_PASSWORD: password
+
+memcached:
+  image: memcached
+  ports:
+    - "11211:11211"
+
+redis:
+  image: redis
+  ports:
+    - "6379:6379"
