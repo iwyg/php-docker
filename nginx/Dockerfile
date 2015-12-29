@@ -7,7 +7,7 @@ RUN if [ -d '/etc/nginx/sites-enabled' ]; then rm -rf /etc/nginx/sites-enabled; 
 ##RUN rm -f /var/log/nginx/*.log
 
 # Add configuration files
-COPY ./nginx.conf /etc/nginx/
+COPY ./config/nginx.conf /etc/nginx/
 #COPY ./sites-enabled/app.default.conf /etc/nginx/sites-enabled/
 
 EXPOSE 80 443

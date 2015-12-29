@@ -1,5 +1,5 @@
 fpm:
-  build: "./php"
+  build: "./fpm"
   ports:
     - "9000:9000"
   links:

@@ -81,7 +81,3 @@ RUN rm -rd /usr/src/php/ext/memcached && rm /tmp/phpmemcached.tar.gz
 VOLUME ["/usr/local/etc"]
 
 EXPOSE 9000
-
-# fpm bin is at /usr/local/sbin/php-fpm
-# fpm config is at /usr/local/etc/php-fpm.conf
-#ENTRYPOINT ["/bin/bash"]
