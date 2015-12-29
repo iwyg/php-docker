@@ -1,5 +1,5 @@
 # Base image, official docker PHP image
-FROM php:fpm
+FROM php:5.6-fpm
 
 ############################################################################
 #### This installes following extensions:                               ####
@@ -30,22 +30,14 @@ RUN apt-get update\
   libmemcached-dev
 
 # Install basic extensions
-RUN docker-php-ext-install mcrypt iconv
-# Install intl extensions
-RUN docker-php-ext-configure intl\
-  && docker-php-ext-install intl
-
-# Install postgres extension
-RUN docker-php-ext-configure pdo_pgsql\
-  && docker-php-ext-install pdo_pgsql
-
-## Install sqlite extension
-## SQLite should be preinstalled?
-#RUN docker-php-ext-configure pdo_sqlite\
-#  && docker-php-ext-install pdo_sqlite
+RUN docker-php-ext-install\
+  mcrypt\
+  iconv\
+  intl\
+  pdo_pgsql
 
 # Install redis extension
-ADD https://github.com/phpredis/phpredis/archive/php7.tar.gz /tmp/phpredis.tar.gz
+ADD https://github.com/phpredis/phpredis/archive/master.tar.gz /tmp/phpredis.tar.gz
 RUN mkdir -p /usr/src/php/ext/redis\
   && tar xf /tmp/phpredis.tar.gz -C /usr/src/php/ext/redis --strip-components=1
 
@@ -56,7 +48,7 @@ RUN docker-php-ext-configure redis\
 RUN rm -rd /usr/src/php/ext/redis && rm /tmp/phpredis.tar.gz
 
 # Install imagick extension
-ADD https://github.com/mkoppanen/imagick/archive/phpseven.tar.gz /tmp/phpimagick.tar.gz
+ADD https://github.com/mkoppanen/imagick/archive/master.tar.gz /tmp/phpimagick.tar.gz
 RUN mkdir -p /usr/src/php/ext/imagick\
   && tar xf /tmp/phpimagick.tar.gz -C /usr/src/php/ext/imagick --strip-components=1
 
@@ -67,8 +59,7 @@ RUN docker-php-ext-configure imagick\
 RUN rm -rd /usr/src/php/ext/imagick && rm /tmp/phpimagick.tar.gz
 
 # Install memcached extension
-
-ADD https://github.com/php-memcached-dev/php-memcached/archive/php7.tar.gz /tmp/phpmemcached.tar.gz
+ADD https://github.com/php-memcached-dev/php-memcached/archive/master.tar.gz /tmp/phpmemcached.tar.gz
 RUN mkdir -p /usr/src/php/ext/memcached\
   && tar xf /tmp/phpmemcached.tar.gz -C /usr/src/php/ext/memcached --strip-components=1
 
@@ -77,6 +68,17 @@ RUN docker-php-ext-configure memcached\
   && docker-php-ext-install memcached
 # cleanup
 RUN rm -rd /usr/src/php/ext/memcached && rm /tmp/phpmemcached.tar.gz
+
+# Install igbinary extension
+ADD https://github.com/igbinary/igbinary/archive/master.tar.gz /tmp/igbinary.tar.gz
+RUN mkdir -p /usr/src/php/ext/igbinary\
+  && tar xf /tmp/igbinary.tar.gz -C /usr/src/php/ext/igbinary --strip-components=1
+
+# configure and install
+RUN docker-php-ext-configure igbinary\
+  && docker-php-ext-install igbinary
+# cleanup
+RUN rm -rd /usr/src/php/ext/igbinary && rm /tmp/igbinary.tar.gz
 
 VOLUME ["/usr/local/etc"]
 
