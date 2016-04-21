@@ -8,6 +8,9 @@ FROM php:7.0-fpm
 #### - iconv                                                            ####
 #### - intl                                                             ####
 #### - redis                                                            ####
+#### - apcu                                                             ####
+#### - apc-bc                                                           ####
+#### - sockets                                                          ####
 #### - memcached                                                        ####
 #### - imagick                                                          ####
 ############################################################################
@@ -33,8 +36,16 @@ RUN apt-get update\
   # Memcached
   libmemcached-dev
 
+
 # Install basic extensions
-RUN docker-php-ext-install mcrypt iconv
+RUN docker-php-ext-install sockets mcrypt iconv
+
+#RUN pecl install apcu-5.1.3\
+#      && echo extension=apcu.ini > /usr/local/etc/php/conf.d/apcu.ini
+
+#RUN pecl install apcu_bc-1.0.3\
+#      && echo extension=apc.ini > /usr/local/etc/php/conf.d/apc.ini
+#
 # Install intl extensions
 RUN docker-php-ext-configure intl\
   && docker-php-ext-install intl
@@ -79,8 +90,38 @@ RUN mkdir -p /usr/src/php/ext/memcached\
 # configure and install
 RUN docker-php-ext-configure memcached\
   && docker-php-ext-install memcached
+
 # cleanup
 RUN rm -rd /usr/src/php/ext/memcached && rm /tmp/phpmemcached.tar.gz
+
+# Install APCu extension
+ADD https://pecl.php.net/get/apcu-5.1.3.tgz /tmp/apcu.tar.gz
+RUN mkdir -p /usr/src/php/ext/apcu\
+  && tar xf /tmp/apcu.tar.gz -C /usr/src/php/ext/apcu --strip-components=1
+
+# configure and install
+RUN docker-php-ext-configure apcu\
+  && docker-php-ext-install apcu
+
+RUN rm -rd /usr/src/php/ext/apcu && rm /tmp/apcu.tar.gz
+
+# Install APCu-BC extension
+ADD https://pecl.php.net/get/apcu_bc-1.0.3.tgz /tmp/apcu_bc.tar.gz
+RUN mkdir -p /usr/src/php/ext/apcu-bc\
+  && tar xf /tmp/apcu_bc.tar.gz -C /usr/src/php/ext/apcu-bc --strip-components=1
+
+# configure and install
+RUN docker-php-ext-configure apcu-bc\
+  && docker-php-ext-install apcu-bc
+
+RUN rm -rd /usr/src/php/ext/apcu-bc && rm /tmp/apcu_bc.tar.gz
+
+#Load APCU.ini before APC.ini
+RUN rm /usr/local/etc/php/conf.d/docker-php-ext-apcu.ini
+RUN echo extension=apcu.so > /usr/local/etc/php/conf.d/20-php-ext-apcu.ini
+
+RUN rm /usr/local/etc/php/conf.d/docker-php-ext-apc.ini
+RUN echo extension=apc.so > /usr/local/etc/php/conf.d/21-php-ext-apc.ini
 
 VOLUME ["/usr/local/etc"]
 
