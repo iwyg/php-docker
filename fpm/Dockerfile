@@ -1,5 +1,5 @@
 # Base image, official docker PHP image
-FROM php:fpm
+FROM php:7.0-fpm
 
 ############################################################################
 #### This installes following extensions:                               ####
@@ -79,5 +79,7 @@ RUN docker-php-ext-configure memcached\
 RUN rm -rd /usr/src/php/ext/memcached && rm /tmp/phpmemcached.tar.gz
 
 VOLUME ["/usr/local/etc"]
+
+RUN usermod -u 1000 www-data
 
 EXPOSE 9000
