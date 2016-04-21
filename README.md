@@ -16,7 +16,10 @@ This repository uses the official [php docker container](https://hub.docker.com/
 - [Redis](http://redis.io/)
 - [Memcached](http://memcached.org/)
 
-Additional PHP extensions are:
+Additional PHP extensions will be installed:
+- APC
+- APCu
+- event
 - mcrypt
 - pdo_pgsql
 - imagick
@@ -35,6 +38,10 @@ Additional PHP extensions are:
 - [Memcached](https://hub.docker.com/_/memcached/)
 - [Postgres](https://hub.docker.com/_/postgres/)
 
+## Custom containers
+- [Mailcatcher](https://mailcatcher.me/)
+- [Beanstalk Work Queue](http://kr.github.io/beanstalkd/)
+
 ## Usage
 
 Assuming you have a running docker machine:
@@ -42,3 +49,15 @@ Assuming you have a running docker machine:
 ```bash
 $ docker-compose up
 ```
+
+## Application path
+
+The default application path is located at `./app/public/index.php`. You'll need
+to alter the application path depending on your specific needs, e.g. if using
+Symfony2 Applications, use `./app/web/app.php`.
+
+
+# License
+
+This repository is licensed under the MIT open source license. 
+For more details see the license file that's distributed with this package.

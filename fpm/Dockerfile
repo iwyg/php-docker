@@ -34,18 +34,15 @@ RUN apt-get update\
   libmagickwand-dev\
   imagemagick\
   # Memcached
-  libmemcached-dev
+  libmemcached-dev\
+  # Event
+  libevent-dev\
+  openssl
 
 
 # Install basic extensions
 RUN docker-php-ext-install sockets mcrypt iconv
 
-#RUN pecl install apcu-5.1.3\
-#      && echo extension=apcu.ini > /usr/local/etc/php/conf.d/apcu.ini
-
-#RUN pecl install apcu_bc-1.0.3\
-#      && echo extension=apc.ini > /usr/local/etc/php/conf.d/apc.ini
-#
 # Install intl extensions
 RUN docker-php-ext-configure intl\
   && docker-php-ext-install intl
@@ -54,10 +51,12 @@ RUN docker-php-ext-configure intl\
 RUN docker-php-ext-configure pdo_pgsql\
   && docker-php-ext-install pdo_pgsql
 
-## Install sqlite extension
-## SQLite should be preinstalled?
-#RUN docker-php-ext-configure pdo_sqlite\
-#  && docker-php-ext-install pdo_sqlite
+# Install event extension
+ADD https://pecl.php.net/get/event-2.0.3.tgz /tmp/event.tar.gz
+RUN mkdir -p /usr/src/php/ext/event\
+  && tar xf /tmp/event.tar.gz -C /usr/src/php/ext/event --strip-components=1
+
+RUN rm -rd /usr/src/php/ext/event && rm /tmp/event.tar.gz
 
 # Install redis extension
 ADD https://github.com/phpredis/phpredis/archive/php7.tar.gz /tmp/phpredis.tar.gz
