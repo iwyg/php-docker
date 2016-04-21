@@ -12,6 +12,10 @@ FROM php:5.6-fpm
 #### - imagick                                                          ####
 ############################################################################
 
+# default PHP config
+RUN if [ -f /usr/local/etc/php/php.ini ]; then rm /usr/local/etc/php/php.ini; fi
+COPY ["config/php.ini", "/usr/local/etc/php/"]
+
 # Install dependencies
 RUN apt-get update\
   && apt-get install -my --no-install-recommends\
@@ -81,5 +85,7 @@ RUN docker-php-ext-configure igbinary\
 RUN rm -rd /usr/src/php/ext/igbinary && rm /tmp/igbinary.tar.gz
 
 VOLUME ["/usr/local/etc"]
+
+RUN usermod -u 1000 www-data
 
 EXPOSE 9000

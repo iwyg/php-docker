@@ -6,8 +6,10 @@ fpm:
     - postgres:postgres
     - memcached:memcached
     - redis:redis
+    - beanstalkd:beanstalkd
+    - mailcatcher:mailcatcher
   volumes:
-    - ./app:/var/www/app
+    - $PWD/app:/var/www/app
 
 nginx:
   build: "./nginx"
@@ -17,8 +19,8 @@ nginx:
   links:
     - fpm
   volumes:
-    - ./app:/var/www/app
-    - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+    - $PWD/app:/var/www/app
+    - $PWD/nginx/sites-enabled:/etc/nginx/sites-enabled
 
 postgres:
   image: postgres
@@ -36,3 +38,15 @@ redis:
   image: redis
   ports:
     - "6379:6379"
+
+beanstalkd:
+  build: "./beanstalkd"
+  ports:
+    - "11300:11300"
+
+mailcatcher:
+  build: "./mailcatcher"
+  ports:
+    - "1025:1025"
+    - "1080:1080"
+  command: mailcatcher -f --ip=0.0.0.0
