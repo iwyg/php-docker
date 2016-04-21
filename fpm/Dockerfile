@@ -12,6 +12,10 @@ FROM php:7.0-fpm
 #### - imagick                                                          ####
 ############################################################################
 
+# default PHP config
+RUN if [ -f /usr/local/etc/php/php.ini ]; then rm /usr/local/etc/php/php.ini; fi
+COPY ["config/php.ini", "/usr/local/etc/php/"]
+
 # Install dependencies
 RUN apt-get update\
   && apt-get install -my --no-install-recommends\
