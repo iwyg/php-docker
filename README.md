@@ -18,13 +18,13 @@
 ## build
 
 ```sh
-> docker bulid -t dev/php .
+> docker build -t dev/php .
 ```
 
 ## run
 
 ```sh
-> docker run -d -p 8080:80 -p 3306:3306 --name=devbox1 dev/php
+> docker run -d -v $(pwd)/app:/var/www/app -p 8080:80 -p 3306:3306 --name=devbox1 dev/php
 ```
 ## Application path
 
