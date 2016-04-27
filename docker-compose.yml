@@ -1,0 +1,26 @@
+fpm:
+  build: "./images/fpm"
+  ports:
+    - "9000:9000"
+  links:
+    - mariadb:mariadb
+  volumes:
+    - $PWD/app:/var/www/app
+
+nginx:
+  build: "./images/nginx"
+  ports:
+    - "80:80"
+    - "443:443"
+  links:
+    - fpm
+  volumes:
+    - $PWD/app:/var/www/app
+    - $PWD/images/nginx/config/sites-enabled:/etc/nginx/sites-enabled
+
+mariadb:
+  image: mariadb
+  ports:
+    - "3306:3306"
+  environment:
+    MYSQL_ROOT_PASSWORD: root
