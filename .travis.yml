@@ -3,6 +3,11 @@ sudo: required
 services:
   - docker
 
+before_install:
+  # Install Docker Compose
+  - curl -L https://github.com/docker/compose/releases/download/1.4.2/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
 script:
-  - docker build -t dev/php .
-  - docker run -d -v $(pwd)/app:/var/www/app -p 8080:80 -p 3306:3306 --name=devbox1 dev/php
+  - docker-compose build

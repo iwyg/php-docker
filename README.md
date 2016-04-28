@@ -2,10 +2,10 @@
 > minimal dockerized web environemnt using NGINX, PHP56, MARIADB.
 
 [![Author](http://img.shields.io/badge/author-iwyg-blue.svg?style=flat-square)](https://github.com/iwyg)
-[![Source Code](http://img.shields.io/badge/source-iwyg/php_docker-blue.svg?style=flat-square)](https://github.com/iwyg/php-docker/tree/minimal)
-[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/iwyg/php-docker/blob/minimal/LICENSE.md)
+[![Source Code](http://img.shields.io/badge/source-iwyg/php_docker-blue.svg?style=flat-square)](https://github.com/iwyg/php-docker/tree/minimal-compose)
+[![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](https://github.com/iwyg/php-docker/blob/minimal-compose/LICENSE.md)
 
-[![Build Status](https://img.shields.io/travis/iwyg/php-docker/minimal.svg?style=flat-square)](https://travis-ci.org/iwyg/php-docker)
+[![Build Status](https://img.shields.io/travis/iwyg/php-docker/minimal-compose.svg?style=flat-square)](https://travis-ci.org/iwyg/php-docker)
 
 ## install
 
