@@ -12,20 +12,25 @@
 ```sh
 > git clone https://github.com/iwyg/php-docker 
 > cd php-docker
-> git checkout minimal
+> git checkout minimal-compose
 ```
 
 ## build
 
 ```sh
-> docker build -t dev/php .
+> docker-compose build 
 ```
 
 ## run
 
 ```sh
+> docker-compose up
+```
+<!--
+```sh
 > docker run -d -v $(pwd)/app:/var/www/app -p 8080:80 -p 3306:3306 --name=devbox1 dev/php
 ```
+-->
 ## Application path
 
 The default application path is located at `./app/public/index.php`. You'll need
