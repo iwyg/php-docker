@@ -1,52 +1,55 @@
-fpm:
-  build: "./fpm"
-  ports:
-    - "9000:9000"
-  links:
-    - postgres:postgres
-    - memcached:memcached
-    - redis:redis
-    - beanstalkd:beanstalkd
-    - mailcatcher:mailcatcher
-  volumes:
-    - $PWD/app:/var/www/app
+version: "2"
 
-nginx:
-  build: "./nginx"
-  ports:
-    - "80:80"
-    - "443:443"
-  links:
-    - fpm
-  volumes:
-    - $PWD/app:/var/www/app
-    - $PWD/nginx/sites-enabled:/etc/nginx/sites-enabled
+services:
+  fpm:
+    build: "./fpm"
+    ports:
+      - "9000:9000"
+    links:
+      - postgres:postgres
+      - memcached:memcached
+      - redis:redis
+      - beanstalkd:beanstalkd
+      - mailcatcher:mailcatcher
+    volumes:
+      - $PWD/app:/var/www/app
 
-postgres:
-  image: postgres
-  ports:
-    - "5432:5432"
-  environment:
-    POSTGRES_PASSWORD: password
+  nginx:
+    build: "./nginx"
+    ports:
+      - "80:80"
+      - "443:443"
+    links:
+      - fpm
+    volumes:
+      - $PWD/app:/var/www/app
+      - $PWD/nginx/sites-enabled:/etc/nginx/sites-enabled
 
-memcached:
-  image: memcached
-  ports:
-    - "11211:11211"
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: password
 
-redis:
-  image: redis
-  ports:
-    - "6379:6379"
+  memcached:
+    image: memcached
+    ports:
+      - "11211:11211"
 
-beanstalkd:
-  build: "./beanstalkd"
-  ports:
-    - "11300:11300"
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
 
-mailcatcher:
-  build: "./mailcatcher"
-  ports:
-    - "1025:1025"
-    - "1080:1080"
-  command: mailcatcher -f --ip=0.0.0.0
+  beanstalkd:
+    build: "./beanstalkd"
+    ports:
+      - "11300:11300"
+
+  mailcatcher:
+    build: "./mailcatcher"
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    command: mailcatcher -f --ip=0.0.0.0
