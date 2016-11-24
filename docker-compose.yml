@@ -1,0 +1,70 @@
+version: "2"
+
+services:
+
+  fpm:
+    environment:
+      APP_ENV: dev
+    build:
+      context: "./fpm"
+      args:
+        build_env: dev
+        with_v8: "false"
+        with_imagick: "true"
+        with_libsodium: "true"
+
+    ports:
+      - "9000:9000"
+    links:
+      - mariadb:mariadb
+      - memcached:memcached
+      - redis:redis
+      - mailcatcher:mailcatcher
+      #- beanstalkd:beanstalkd
+    volumes:
+      - $PWD/app:/var/www/app
+
+  mariadb:
+    environment:
+      APP_ENV: dev
+    build:
+      context: "./mariadb"
+      args:
+        APP_ENV: dev
+    ports:
+      - "33060:3306"
+    volumes:
+      - $PWD/mariadb/.db:/var/lib/mysql
+
+  nginx:
+    environment:
+      APP_ENV: dev
+    build:
+      context: "./nginx"
+      args:
+        APP_ENV: dev
+    ports:
+      - "8080:80"
+      - "443:443"
+    links:
+      - fpm
+    volumes:
+      - $PWD/app:/var/www/app
+      - $PWD/nginx/sites-enabled:/etc/nginx/sites-enabled
+
+  redis:
+    image: redis:3.2-alpine
+    ports:
+      - "6379:6379"
+
+  memcached:
+    image: memcached:1.4-alpine
+    ports:
+      - "11211:11211"
+
+  mailcatcher:
+    build: "./mailcatcher"
+    ports:
+      - "1025:1025"
+      - "1080:1080"
+    command: mailcatcher -f --ip=0.0.0.0
