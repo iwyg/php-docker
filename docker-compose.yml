@@ -9,7 +9,7 @@ services:
       context: "./fpm"
       args:
         build_env: dev
-        with_v8: "false"
+        with_v8: "true"
         with_imagick: "true"
         with_libsodium: "true"
 
