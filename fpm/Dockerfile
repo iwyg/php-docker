@@ -112,11 +112,13 @@ ADD https://pecl.php.net/get/v8js-1.3.3.tgz /tmp/v8.tar.gz
 
 RUN if [ ${with_v8} == 'true' ]; then \
   # install depot_tools
-  apk add --no-cache git make bash python \
+  apk add --no-cache git make bash wget python \
   && mkdir -p /usr/src \
   && cd /usr/src \
   && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
   && export PATH="/usr/src/depot_tools:$PATH" \
+  && gclient config https://chromium.googlesource.com/v8/v8 \
+  && gclient sync --with_branch_heads \
   # install V8
   && cd /usr/src && fetch v8 \
   && cd /usr/src/v8 && make native library=shared snapshot=off -j 4 \
@@ -129,7 +131,7 @@ RUN if [ ${with_v8} == 'true' ]; then \
   && docker-php-ext-configure v8js\
   && docker-php-ext-install v8js\
   # cleanup
-  && apk del git make bash python \
+  && apk del git make bash wget python \
   && rm -rf /usr/src/depot_tools; fi
 
 RUN rm -rf /usr/src/php/ext/v8js && rm /tmp/v8.tar.gz
