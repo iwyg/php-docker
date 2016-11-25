@@ -9,32 +9,20 @@ services:
       context: "./fpm"
       args:
         build_env: dev
-        with_v8: "true"
+        with_v8: "false"
         with_imagick: "true"
         with_libsodium: "true"
 
     ports:
       - "9000:9000"
     links:
-      - mariadb:mariadb
+      - postgres:postgres
       - memcached:memcached
       - redis:redis
       - mailcatcher:mailcatcher
       #- beanstalkd:beanstalkd
     volumes:
       - $PWD/app:/var/www/app
-
-  mariadb:
-    environment:
-      APP_ENV: dev
-    build:
-      context: "./mariadb"
-      args:
-        APP_ENV: dev
-    ports:
-      - "33060:3306"
-    volumes:
-      - $PWD/mariadb/.db:/var/lib/mysql
 
   nginx:
     environment:
@@ -51,6 +39,17 @@ services:
     volumes:
       - $PWD/app:/var/www/app
       - $PWD/nginx/sites-enabled:/etc/nginx/sites-enabled
+
+  postgres:
+    image: postgres:9.6-alpine
+    ports:
+      - "54320:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: secret
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - $PWD/postgres/pgdata:/var/lib/postgresql/data/pgdata
 
   redis:
     image: redis:3.2-alpine
