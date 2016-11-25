@@ -117,8 +117,8 @@ RUN if [ ${with_v8} == 'true' ]; then \
   && cd /usr/src \
   && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
   && export PATH="/usr/src/depot_tools:$PATH" \
-  && gclient config https://chromium.googlesource.com/v8/v8 \
-  && gclient sync --with_branch_heads \
+  #&& gclient config https://chromium.googlesource.com/v8/v8 \
+  #&& gclient sync --with_branch_heads \
   # install V8
   && cd /usr/src && fetch v8 \
   && cd /usr/src/v8 && make native library=shared snapshot=off -j 4 \
