@@ -140,10 +140,13 @@ RUN rm -rf /usr/src/php/ext/v8js && rm /tmp/v8.tar.gz
 # Install libsodium extension
 # -----------------------------------------------------------------
 ADD https://github.com/jedisct1/libsodium-php/archive/1.0.6.tar.gz /tmp/libsodium.tar.gz
-RUN if [ ${with_libsodium} == 'true' ]; then mkdir -p /usr/src/php/ext/libsodium\
+RUN if [ ${with_libsodium} == 'true' ]; then\
+  apk add --no-cache libsodium-dev \
+  && mkdir -p /usr/src/php/ext/libsodium\
   && tar xf /tmp/libsodium.tar.gz -C /usr/src/php/ext/libsodium --strip-components=1\
   && docker-php-ext-configure libsodium\
-  && docker-php-ext-install libsodium; fi
+  && docker-php-ext-install libsodium\
+  && apk del libsodium-dev; fi
 
 RUN rm -rf /usr/src/php/ext/libsodium && rm /tmp/libsodium.tar.gz
 
@@ -163,7 +166,7 @@ RUN apk del \
   imagemagick-dev \
   libmemcached-dev \
   cyrus-sasl-dev \
-  libev-dev \
+  libev-dev
 
 #RUN usermod -u 1000 www-data
 
