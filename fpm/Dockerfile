@@ -43,13 +43,6 @@ RUN if [ ${with_v8} == 'true' ]; then \
   apk add --no-cache git make bash wget curl python \
   && mkdir -p /usr/src \
   && cd /usr/src \
-  #&& curl -O https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz \
-  #&& tar xvf Python-2.7.12.tar.xz && cd Python-2.7.12 \
-  #&& ./configure --prefix=/usr         \
-  #               --enable-shared       \
-  #               --with-system-expat   \
-  #               --with-system-ffi     \
-  #               --enable-unicode=ucs4 \
   && make && make install \
   && echo `which python` \
   && cd /usr/src \
@@ -81,7 +74,6 @@ RUN if [ ${with_v8} == 'true' ]; then \
   && docker-php-ext-configure v8js\
   && docker-php-ext-install v8js\
   # cleanup
-  && cd /usr/src/Python-2.7.12 && make uninstall && make clean \
   && apk del git make bash wget curl python \
   && rm -rf Python-2.7.12 \
   && rm -rf /usr/src/depot_tools; fi
