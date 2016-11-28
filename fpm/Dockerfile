@@ -32,6 +32,61 @@ RUN apk add --no-cache \
   openssl
   #shadow
 
+# -----------------------------------------------------------------
+# Install v8js extension
+# -----------------------------------------------------------------
+ADD https://pecl.php.net/get/v8js-1.3.3.tgz /tmp/v8.tar.gz
+
+RUN if [ ${with_v8} == 'true' ]; then \
+  # install depot_tools
+  #apk add --no-cache git make bash wget \
+  apk add --no-cache git make bash wget curl python \
+  && mkdir -p /usr/src \
+  && cd /usr/src \
+  #&& curl -O https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz \
+  #&& tar xvf Python-2.7.12.tar.xz && cd Python-2.7.12 \
+  #&& ./configure --prefix=/usr         \
+  #               --enable-shared       \
+  #               --with-system-expat   \
+  #               --with-system-ffi     \
+  #               --enable-unicode=ucs4 \
+  && make && make install \
+  && echo `which python` \
+  && cd /usr/src \
+  && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
+  && export PATH="/usr/src/depot_tools:$PATH" \
+  # install V8
+  && echo "fetching v8"\
+  && cd /usr/src && gclient config --spec 'solutions = [    \
+    {                                                       \
+      "url": "https://chromium.googlesource.com/v8/v8.git", \
+      "managed": False,                                     \
+      "name": "v8",                                         \
+      "deps_file": "DEPS",                                  \
+      "custom_deps": {},                                    \
+    },                                                      \
+  ]'                                                        \
+  && gclient sync --verbose --with_branch_heads \
+  #&& fetch v8\
+  && echo "done fetching v8"\
+  && echo "building v8"\
+  && cd /usr/src/v8 && make native library=shared snapshot=off -j 2 \
+  && echo "done building v8"\
+  && cp -R /usr/src/v8/out/native/lib.target/lib* /lib64/ \
+  && cp /usr/src/v8/out/native/obj.target/tools/gyp/libv8_libplatform.a /usr/lib64/ \
+  && cp -R /usr/src/v8/include /usr/local \
+  # install V8js extension
+  && mkdir -p /usr/src/php/ext/v8js\
+  && tar xf /tmp/v8.tar.gz -C /usr/src/php/ext/v8js --strip-components=1\
+  && docker-php-ext-configure v8js\
+  && docker-php-ext-install v8js\
+  # cleanup
+  && cd /usr/src/Python-2.7.12 && make uninstall && make clean \
+  && apk del git make bash wget curl python \
+  && rm -rf Python-2.7.12 \
+  && rm -rf /usr/src/depot_tools; fi
+
+RUN rm -rf /usr/src/php/ext/v8js && rm /tmp/v8.tar.gz
 
 # Install xdebug if in dev environment
 #RUN if [ ${APP_ENV} == 'dev' ]; then docker-php-ext-install xdebug; fi
@@ -104,37 +159,6 @@ RUN if [ ${with_imagick} == 'true' ]; then mkdir -p /usr/src/php/ext/imagick\
   && docker-php-ext-install imagick; fi
 
 RUN rm -rf /usr/src/php/ext/imagick && rm /tmp/imagick.tar.gz
-
-# -----------------------------------------------------------------
-# Install v8js extension
-# -----------------------------------------------------------------
-ADD https://pecl.php.net/get/v8js-1.3.3.tgz /tmp/v8.tar.gz
-
-RUN if [ ${with_v8} == 'true' ]; then \
-  # install depot_tools
-  apk add --no-cache git make bash wget python \
-  && mkdir -p /usr/src \
-  && cd /usr/src \
-  && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
-  && export PATH="/usr/src/depot_tools:$PATH" \
-  #&& gclient config https://chromium.googlesource.com/v8/v8 \
-  #&& gclient sync --with_branch_heads \
-  # install V8
-  && cd /usr/src && fetch v8 \
-  && cd /usr/src/v8 && make native library=shared snapshot=off -j 4 \
-  && cp -R /usr/src/v8/out/native/lib.target/lib* /lib64/ \
-  && cp /usr/src/v8/out/native/obj.target/tools/gyp/libv8_libplatform.a /usr/lib64/ \
-  && cp -R /usr/src/v8/include /usr/local \
-  # install V8js extension
-  && mkdir -p /usr/src/php/ext/v8js\
-  && tar xf /tmp/v8.tar.gz -C /usr/src/php/ext/v8js --strip-components=1\
-  && docker-php-ext-configure v8js\
-  && docker-php-ext-install v8js\
-  # cleanup
-  && apk del git make bash wget python \
-  && rm -rf /usr/src/depot_tools; fi
-
-RUN rm -rf /usr/src/php/ext/v8js && rm /tmp/v8.tar.gz
 
 # -----------------------------------------------------------------
 # Install libsodium extension
