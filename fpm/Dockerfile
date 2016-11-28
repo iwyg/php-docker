@@ -43,8 +43,6 @@ RUN if [ ${with_v8} == 'true' ]; then \
   apk add --no-cache git make bash wget curl python \
   && mkdir -p /usr/src \
   && cd /usr/src \
-  && make && make install \
-  && echo `which python` \
   && cd /usr/src \
   && git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git \
   && export PATH="/usr/src/depot_tools:$PATH" \
@@ -62,8 +60,9 @@ RUN if [ ${with_v8} == 'true' ]; then \
   && gclient sync --verbose --with_branch_heads \
   #&& fetch v8\
   && echo "done fetching v8"\
+  && cd /usr/src/v8 \
   && echo "building v8"\
-  && cd /usr/src/v8 && make native library=shared snapshot=off -j 2 \
+  && make native library=shared snapshot=off -j 2 \
   && echo "done building v8"\
   && cp -R /usr/src/v8/out/native/lib.target/lib* /lib64/ \
   && cp /usr/src/v8/out/native/obj.target/tools/gyp/libv8_libplatform.a /usr/lib64/ \
