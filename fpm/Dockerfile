@@ -39,8 +39,7 @@ ADD https://pecl.php.net/get/v8js-1.3.3.tgz /tmp/v8.tar.gz
 
 RUN if [ ${with_v8} == 'true' ]; then \
   # install depot_tools
-  #apk add --no-cache git make bash wget \
-  apk add --no-cache git make bash wget curl python \
+  apk add --no-cache git make bash wget curl python chrpath \
   && mkdir -p /usr/src \
   && cd /usr/src \
   && cd /usr/src \
@@ -61,8 +60,12 @@ RUN if [ ${with_v8} == 'true' ]; then \
   #&& fetch v8\
   && echo "done fetching v8"\
   && cd /usr/src/v8 \
+  # Build (with internal snapshots)
+  && export GYPFLAGS="-Dv8_use_external_startup_data=0" \
+  # Force gyp to use system-wide ld.gold
+  && export GYPFLAGS="${GYPFLAGS} -Dlinux_use_bundled_gold=0" \
   && echo "building v8"\
-  && make native library=shared snapshot=off -j 2 \
+  && make native library=shared snapshot=on -j2\
   && echo "done building v8"\
   && cp -R /usr/src/v8/out/native/lib.target/lib* /lib64/ \
   && cp /usr/src/v8/out/native/obj.target/tools/gyp/libv8_libplatform.a /usr/lib64/ \
@@ -73,8 +76,7 @@ RUN if [ ${with_v8} == 'true' ]; then \
   && docker-php-ext-configure v8js\
   && docker-php-ext-install v8js\
   # cleanup
-  && apk del git make bash wget curl python \
-  && rm -rf Python-2.7.12 \
+  && apk del git make bash wget curl python chrpath \
   && rm -rf /usr/src/depot_tools; fi
 
 RUN rm -rf /usr/src/php/ext/v8js && rm /tmp/v8.tar.gz
